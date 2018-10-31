@@ -2,9 +2,11 @@ package com.mycompany.view;
 
 import com.mycompany.controller.MainController;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.json.simple.parser.ParseException;
 
 public class MainView {
 
@@ -16,6 +18,7 @@ public class MainView {
             System.out.println("Which operation do you want to do?");
             System.out.println("----------------------------------");
             System.out.println("C) Create a JSON");
+            System.out.println("G) Get JSON from File");
             System.out.println("R) Create File from JSON");
             System.out.println("Q) Quit");
             selection = scan.nextLine();
@@ -24,14 +27,20 @@ public class MainView {
                 case "C":
                     mainController.createJSON();
                     break;
-                case "R": {
+                case "R":
                     try {
                         mainController.createFileFromJSON();
                     } catch (FileNotFoundException ex) {
                         Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                }
-                break;
+                    break;
+                case "G":
+                    try {
+                        mainController.getJSONFromFile();
+                    } catch (IOException | ParseException ex) {
+                        Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    break;
                 default:
             }
         }

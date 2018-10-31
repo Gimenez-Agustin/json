@@ -2,6 +2,8 @@ package com.mycompany.controller;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Scanner;
 import org.json.simple.JSONArray;
@@ -10,14 +12,14 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 public class MainController {
-    
+
     public static JSONObject libraryObject = new JSONObject();
 
-    public void createJSON() {       
+    public void createJSON() {
 
         Scanner input = new Scanner(System.in);
         System.out.println("Enter name of the library ");
-        String libraryName = input.nextLine();       
+        String libraryName = input.nextLine();
 
         //This is the main name of the JSON
         libraryObject.put("Library Name", libraryName);
@@ -59,13 +61,13 @@ public class MainController {
         libraryObject.put("Books", books);
         //This is just to display the JSON information
         System.out.println("JSON file: " + libraryObject.toJSONString());
-        
+
     }
 
-    public void createFileFromJSON() throws FileNotFoundException { 
+    public void createFileFromJSON() throws FileNotFoundException {
         Scanner input = new Scanner(System.in);
         System.out.println("Enter a name for your file without the extension");
-        String fileName = input.nextLine(); 
+        String fileName = input.nextLine();
         File file = new File(fileName + ".json");
 
         try (PrintWriter writeFile = new PrintWriter(file)) {
@@ -75,7 +77,7 @@ public class MainController {
         } catch (FileNotFoundException ex) {
             //if there is an error it will be display
             System.out.println(ex.toString());
-        }       
+        }
 
         try {
             //This block will display the information of the file
@@ -91,22 +93,50 @@ public class MainController {
             System.out.println("File created... ");
             System.out.println("Library name: " + objLibrary.get("Library Name").toString());
             //get all the books from the list of the file to display it
-            JSONArray booksIn = (JSONArray) objLibrary.get("Books");
+            JSONArray books = (JSONArray) objLibrary.get("Books");
 
             //display each book
-            for (int i = 0; i < booksIn.size(); i++) {
-                JSONObject bookIn = (JSONObject) booksIn.get(i);
-                String totalChaptersIn = (String) bookIn.get("totalChapters");
-                String yearIn = (String) bookIn.get("year");
-                String authorNameIn = (String) bookIn.get("authorName");
-                String bookTitleIn = (String) bookIn.get("bookTitle");
-
-                System.out.println("Book Information:" + "\n\t" + bookTitleIn + "\n\t" + totalChaptersIn + "\n\t" + authorNameIn + "\n\t" + yearIn);
-            }
+            displayArray(books);
         } catch (FileNotFoundException ex) {
             System.out.println(ex.toString());
         } catch (ParseException ex) {
             System.out.println(ex.toString());
         }
     }
+
+    public void getJSONFromFile() throws FileNotFoundException, IOException, ParseException {
+
+        Scanner input = new Scanner(System.in);
+        System.out.println("Enter a name for your file without the extension");
+        String fileName = input.nextLine();
+        //read the file
+        Object obj = new JSONParser().parse(new FileReader(fileName + ".json"));
+        JSONObject jObject = (JSONObject) obj;
+
+        String libraryName = (String) jObject.get("Library Name");
+
+        System.out.println("Library Name: " + libraryName);
+        
+        JSONArray books = (JSONArray) jObject.get("Books");
+        displayArray(books);
+    }
+
+    public void displayArray(JSONArray books) {
+        System.out.println("Books");
+        System.out.println("-------------------------------");
+        for (int i = 0; i < books.size(); i++) {
+            JSONObject book = (JSONObject) books.get(i);
+            String totalChapters = (String) book.get("totalChapters");
+            String year = (String) book.get("year");
+            String authorName = (String) book.get("authorName");
+            String bookTitle = (String) book.get("bookTitle");
+
+            System.out.println("Title:          " + bookTitle);
+            System.out.println("Total Chapters: "+ totalChapters);
+            System.out.println("Author:         " + authorName);
+            System.out.println("Year:           " + year);
+            System.out.println("-------------------------------");
+        }
+    }
+
 }
